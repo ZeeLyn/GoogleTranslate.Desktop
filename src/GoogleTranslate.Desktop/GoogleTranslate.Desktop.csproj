@@ -67,6 +67,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AutoStartup.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="TranslateModel.cs" />
     <Page Include="MainWindow.xaml">

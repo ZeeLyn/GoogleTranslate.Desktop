@@ -37,6 +37,8 @@ namespace GoogleTranslate.Desktop
 
         private readonly NotifyIcon _notifyIcon = new NotifyIcon();
 
+        private readonly System.Windows.Forms.MenuItem[] MenuItems;
+
         public MainWindow()
         {
             DataContext = _translateModel;
@@ -46,14 +48,31 @@ namespace GoogleTranslate.Desktop
             _notifyIcon.Visible = true;
             _notifyIcon.Icon = new System.Drawing.Icon("logo.ico");
             _notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
-            System.Windows.Forms.MenuItem[] menuItems =
-            {
-                new System.Windows.Forms.MenuItem("开打主窗口",Show),
-                new System.Windows.Forms.MenuItem("退出", Exit)
-            };
-            _notifyIcon.ContextMenu = new System.Windows.Forms.ContextMenu(menuItems);
+
+
 
             Closing += MainWindow_Closing;
+
+            MenuItems = new[]
+            {
+                new System.Windows.Forms.MenuItem("开机启动",SetAutoStartup) { Name="AutoStartup", Checked=AutoStartup.IsExistKey("Google translate desktop") , },
+                new System.Windows.Forms.MenuItem("开打主窗口", Show),
+                new System.Windows.Forms.MenuItem("退出", Exit)
+            };
+            _notifyIcon.ContextMenu = new System.Windows.Forms.ContextMenu(MenuItems);
+        }
+
+        private void SetAutoStartup(object sender, EventArgs e)
+        {
+            var menu = (System.Windows.Forms.MenuItem)sender;
+            if (AutoStartup.SelfRunning(!menu.Checked, "Google translate desktop",
+                System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GoogleTranslate.Desktop.exe")))
+            {
+                menu.Checked = !menu.Checked;
+            }
+            else
+                MessageBox.Show("设置失败，请以管理员身份运行！", "失败");
+
         }
 
         private void Show(object sender, EventArgs e)
