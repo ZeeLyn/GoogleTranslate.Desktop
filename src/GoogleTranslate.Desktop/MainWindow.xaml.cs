@@ -17,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using MahApps.Metro.Controls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -31,7 +32,7 @@ namespace GoogleTranslate.Desktop
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : MetroWindow
     {
         private readonly RestClient _client = new RestClient("https://translate.google.cn");
 
@@ -67,6 +68,8 @@ namespace GoogleTranslate.Desktop
                 new MenuItem("退出", Exit)
             };
             _notifyIcon.ContextMenu = new System.Windows.Forms.ContextMenu(menuItems);
+
+            _translateModel.OnChangeTargetLanguage += arg => { Translate(); };
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -150,23 +153,24 @@ namespace GoogleTranslate.Desktop
         private void Input_TextChanged(object sender, TextChangedEventArgs e)
         {
             var input = (TextBox)sender;
-            Translate(input.Text);
+            _translateModel.InputText = input.Text;
+            Translate();
         }
 
         private void OpenHelpClick(object sender, CanExecuteRoutedEventArgs e)
         {
-            MessageBox.Show(this, "Alt+H:帮助\nAlt+S:切换目标语言", "快捷键");
+            MessageBox.Show(this, "Control+1:主窗口显隐切换", "快捷键");
         }
 
 
         private void SwitchLanguageClick(object sender, CanExecuteRoutedEventArgs e)
         {
-
+            //SwitchLanguageDropDown.RaiseEvent(new RoutedEventArgs(DropDownButton.MouseEnterEvent));
         }
 
-        private void Translate(string input)
+        private void Translate()
         {
-            if (string.IsNullOrWhiteSpace(input))
+            if (string.IsNullOrWhiteSpace(_translateModel.InputText))
             {
                 _translateModel.TranslateResult = "";
                 return;
@@ -176,8 +180,8 @@ namespace GoogleTranslate.Desktop
             {
                 try
                 {
-                    var tick = tk(input, "432558.706957580");
-                    var request = new RestRequest($"translate_a/single?client=webapp&ie=UTF-8&sl=auto&tl=en&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=gt&pc=1&otf=1&ssel=0&tsel=0&kc=1&tk={tick}&q={HttpUtility.UrlEncode(input)}");
+                    var tick = tk(_translateModel.InputText, "432558.706957580");
+                    var request = new RestRequest($"translate_a/single?client=webapp&ie=UTF-8&sl=auto&tl={_translateModel.TargetLanguage}&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=gt&pc=1&otf=1&ssel=0&tsel=0&kc=1&tk={tick}&q={HttpUtility.UrlEncode(_translateModel.InputText)}");
                     var response = await _client.ExecuteGetTaskAsync(request);
                     if (response.IsSuccessful)
                     {

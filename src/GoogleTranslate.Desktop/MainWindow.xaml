@@ -1,38 +1,88 @@
-﻿<Window x:Class="GoogleTranslate.Desktop.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+﻿<Controls:MetroWindow
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:GoogleTranslate.Desktop"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:desktop="clr-namespace:GoogleTranslate.Desktop"
+        xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="GoogleTranslate.Desktop.MainWindow"
         mc:Ignorable="d"
-        Title="Google translate desktop" Height="550" Width="1000" Loaded="MainWindow_Loaded">
-    <Window.Resources>
+        Title="Google translate desktop" Height="550" Width="1000" Loaded="MainWindow_Loaded" TitlebarHeight="40">
+
+    <Controls:MetroWindow.Resources>
         <RoutedUICommand x:Key="OpenHelpClick" Text="OpenHelpClick"/>
         <RoutedUICommand x:Key="SwitchLanguageClick" Text="SwitchLanguageClick"/>
-    </Window.Resources>
+    </Controls:MetroWindow.Resources>
 
-    <Window.InputBindings>
-        <KeyBinding Gesture="Alt+H" Key="H"  Command="{StaticResource OpenHelpClick}"></KeyBinding>
-        <KeyBinding Gesture="Alt+S" Key="S"  Command="{StaticResource SwitchLanguageClick}"></KeyBinding>
-    </Window.InputBindings>
+    <Controls:MetroWindow.IconTemplate>
+        <DataTemplate>
+            <Grid 
+                  Margin="6"
+                  Background="Transparent"
+                  RenderOptions.EdgeMode="Aliased"
+                  RenderOptions.BitmapScalingMode="HighQuality">
 
-    <Window.CommandBindings>
-        <CommandBinding Command="{StaticResource OpenHelpClick}" CanExecute="OpenHelpClick"></CommandBinding>
-        <CommandBinding Command="{StaticResource SwitchLanguageClick}" CanExecute="SwitchLanguageClick"></CommandBinding>
-    </Window.CommandBindings>
+                <Image Source="/logo.ico" />
+
+            </Grid>
+        </DataTemplate>
+    </Controls:MetroWindow.IconTemplate>
+
+    <Controls:MetroWindow.InputBindings>
+        <KeyBinding Gesture="Alt+H" Key="H"  Command="{StaticResource OpenHelpClick}"/>
+        <KeyBinding Gesture="Alt+S" Key="S"  Command="{StaticResource SwitchLanguageClick}"/>
+    </Controls:MetroWindow.InputBindings>
+
+    <Controls:MetroWindow.CommandBindings>
+        <CommandBinding Command="{StaticResource OpenHelpClick}" CanExecute="OpenHelpClick"/>
+        <CommandBinding Command="{StaticResource SwitchLanguageClick}" CanExecute="SwitchLanguageClick"/>
+    </Controls:MetroWindow.CommandBindings>
+
+
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <ItemsControl ItemsSource="{Binding RecentlyUsedLanguages}" HorizontalAlignment="Center"  Controls:ScrollViewerHelper.IsHorizontalScrollWheelEnabled="True">
+
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"></StackPanel>
+
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Label Margin="0 7 5 0" Cursor="Hand" Content="{Binding Name}"></Label>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+            </ItemsControl>
+            <Controls:DropDownButton BorderThickness="0" Margin="0 5 10 5" Background="#1585B5" ItemsSource="{Binding Languages ,Mode=TwoWay}" DisplayMemberPath="Name" Content="{Binding TargetLanguageText}" Name="SwitchLanguageDropDown">
+                <Controls:DropDownButton.ItemContainerStyle>
+                    <Style BasedOn="{StaticResource {x:Type MenuItem}}" TargetType="{x:Type MenuItem}">
+                        <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:DropDownButton}}, Path=DataContext.GenreDropDownMenuItemCommand}" />
+                        <Setter Property="CommandParameter" Value="{Binding}" />
+                    </Style>
+                </Controls:DropDownButton.ItemContainerStyle>
+            </Controls:DropDownButton>
+
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
 
     <Grid Background="#252526">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-            <ColumnDefinition Width="5"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <TextBox  Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" BorderThickness="0" Background="#252526" Foreground="#ffffff" Margin="10" TextChanged="Input_TextChanged" FontSize="14" TabIndex="0"></TextBox>
-        <GridSplitter  Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" Name="InputTextBox" Background="#3F3F46">
-        </GridSplitter>
-        <TextBox  Grid.Row="0" Grid.Column="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" BorderThickness="0" Background="#252526" Foreground="#ffffff" Margin="10" FontSize="14" TabIndex="1" Text="{Binding TranslateResult, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox  Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" BorderThickness="0" Background="#252526" Foreground="#ffffff" Margin="10" TextChanged="Input_TextChanged" FontSize="14" TabIndex="0" MaxLength="5000"/>
+        <GridSplitter  Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" x:Name="InputTextBox" Background="#3F3F46"/>
+        <TextBox  Grid.Row="0" Grid.Column="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" BorderThickness="0" Background="#252526" Foreground="#ffffff" Margin="10" FontSize="14" TabIndex="1" Text="{Binding TranslateResult, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
     </Grid>
-</Window>
+
+</Controls:MetroWindow>
