@@ -5,20 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GoogleTranslate.Desktop"
         mc:Ignorable="d"
-        Title="Google translate desktop" Height="450" Width="1000" Loaded="MainWindow_Loaded">
+        Title="Google translate desktop" Height="550" Width="1000" Loaded="MainWindow_Loaded">
     <Window.Resources>
         <RoutedUICommand x:Key="OpenHelpClick" Text="OpenHelpClick"/>
-        <RoutedUICommand x:Key="ShowOrHideClick" Text="ShowOrHideClick"/>
+        <RoutedUICommand x:Key="SwitchLanguageClick" Text="SwitchLanguageClick"/>
     </Window.Resources>
 
     <Window.InputBindings>
         <KeyBinding Gesture="Alt+H" Key="H"  Command="{StaticResource OpenHelpClick}"></KeyBinding>
-        <KeyBinding Gesture="Control+2" Key="S"  Command="{StaticResource ShowOrHideClick}"></KeyBinding>
+        <KeyBinding Gesture="Alt+S" Key="S"  Command="{StaticResource SwitchLanguageClick}"></KeyBinding>
     </Window.InputBindings>
 
     <Window.CommandBindings>
         <CommandBinding Command="{StaticResource OpenHelpClick}" CanExecute="OpenHelpClick"></CommandBinding>
-        <CommandBinding Command="{StaticResource ShowOrHideClick}" CanExecute="ShowOrHideClick"></CommandBinding>
+        <CommandBinding Command="{StaticResource SwitchLanguageClick}" CanExecute="SwitchLanguageClick"></CommandBinding>
     </Window.CommandBindings>
 
     <Grid Background="#252526">

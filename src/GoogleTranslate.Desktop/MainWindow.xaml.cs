@@ -11,6 +11,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -20,6 +21,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 using Application = System.Windows.Application;
+using MenuItem = System.Windows.Forms.MenuItem;
 using MessageBox = System.Windows.MessageBox;
 using TextBox = System.Windows.Controls.TextBox;
 
@@ -37,13 +39,17 @@ namespace GoogleTranslate.Desktop
 
         private readonly NotifyIcon _notifyIcon = new NotifyIcon();
 
-        private readonly System.Windows.Forms.MenuItem[] MenuItems;
+        /// <summary>
+        /// 当前窗口句柄
+        /// </summary>
+        private IntPtr m_Hwnd = new IntPtr();
 
         public MainWindow()
         {
             DataContext = _translateModel;
             Icon = BitmapFrame.Create(new Uri("pack://application:,,,/logo.ico", UriKind.RelativeOrAbsolute));
             InitializeComponent();
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
             _notifyIcon.Text = @"Google translate desktop";
             _notifyIcon.Visible = true;
             _notifyIcon.Icon = new System.Drawing.Icon("logo.ico");
@@ -53,18 +59,36 @@ namespace GoogleTranslate.Desktop
 
             Closing += MainWindow_Closing;
 
-            MenuItems = new[]
+            var menuItems = new[]
             {
-                new System.Windows.Forms.MenuItem("开机启动",SetAutoStartup) { Name="AutoStartup", Checked=AutoStartup.IsExistKey("Google translate desktop") , },
-                new System.Windows.Forms.MenuItem("开打主窗口", Show),
-                new System.Windows.Forms.MenuItem("退出", Exit)
+                //new MenuItem("热键",SetHotKey),
+                new MenuItem("开机启动",SetAutoStartup) { Name="AutoStartup", Checked=AutoStartup.IsExistKey("Google translate desktop") , },
+                new MenuItem("开打主窗口", Show),
+                new MenuItem("退出", Exit)
             };
-            _notifyIcon.ContextMenu = new System.Windows.Forms.ContextMenu(MenuItems);
+            _notifyIcon.ContextMenu = new System.Windows.Forms.ContextMenu(menuItems);
+        }
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            m_Hwnd = new WindowInteropHelper(this).Handle;
+            var hWndSource = HwndSource.FromHwnd(m_Hwnd);
+            // 添加处理程序
+            if (hWndSource != null) hWndSource.AddHook(WndProc);
+
+            HotKeyHelper.RegisterHotKey(new HotKeyModel
+            {
+                IsUsable = true,
+                IsSelectCtrl = true,
+                SelectKey = 49,
+                Name = EHotKeySetting.打开主窗口.ToString()
+            }, m_Hwnd);
         }
 
         private void SetAutoStartup(object sender, EventArgs e)
         {
-            var menu = (System.Windows.Forms.MenuItem)sender;
+            var menu = (MenuItem)sender;
             if (AutoStartup.SelfRunning(!menu.Checked, "Google translate desktop",
                 System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GoogleTranslate.Desktop.exe")))
             {
@@ -75,12 +99,18 @@ namespace GoogleTranslate.Desktop
 
         }
 
+        private void SetHotKey(object sender, EventArgs e)
+        {
+            new HotKeySettingWindow().ShowDialog();
+        }
+
         private void Show(object sender, EventArgs e)
         {
             ShowWindow();
         }
         private void Exit(object sender, EventArgs e)
         {
+            _notifyIcon.Visible = false;
             Application.Current.Shutdown();
         }
 
@@ -125,9 +155,14 @@ namespace GoogleTranslate.Desktop
 
         private void OpenHelpClick(object sender, CanExecuteRoutedEventArgs e)
         {
-            MessageBox.Show(this, "Alt+H:帮助\nAlt+S:打开主界面", "快捷键");
+            MessageBox.Show(this, "Alt+H:帮助\nAlt+S:切换目标语言", "快捷键");
         }
 
+
+        private void SwitchLanguageClick(object sender, CanExecuteRoutedEventArgs e)
+        {
+
+        }
 
         private void Translate(string input)
         {
@@ -209,12 +244,33 @@ namespace GoogleTranslate.Desktop
         }
         #endregion
 
-        private void ShowOrHideClick(object sender, CanExecuteRoutedEventArgs e)
+
+        /// <summary>
+        /// 窗体回调函数，接收所有窗体消息的事件处理函数
+        /// </summary>
+        /// <param name="hWnd">窗口句柄</param>
+        /// <param name="msg">消息</param>
+        /// <param name="wideParam">附加参数1</param>
+        /// <param name="longParam">附加参数2</param>
+        /// <param name="handled">是否处理</param>
+        /// <returns>返回句柄</returns>
+        private IntPtr WndProc(IntPtr hWnd, int msg, IntPtr wideParam, IntPtr longParam, ref bool handled)
         {
-            if (ShowInTaskbar)
-                HideWindow();
-            else
-                ShowWindow();
+            switch (msg)
+            {
+                case HotKeyManager.WM_HOTKEY:
+                    int sid = wideParam.ToInt32();
+                    if (sid == HotKeyHelper.GetHotKeySetting(EHotKeySetting.打开主窗口))
+                    {
+                        if (ShowInTaskbar)
+                            HideWindow();
+                        else
+                            ShowWindow();
+                    }
+                    handled = true;
+                    break;
+            }
+            return IntPtr.Zero;
         }
     }
 }

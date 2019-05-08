@@ -68,8 +68,19 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AutoStartup.cs" />
+    <Compile Include="EHotKeySetting.cs" />
+    <Compile Include="HotKeyHelper.cs" />
+    <Compile Include="HotKeyManager.cs" />
+    <Compile Include="HotKeyModel.cs" />
+    <Compile Include="HotKeySettingWindow.xaml.cs">
+      <DependentUpon>HotKeySettingWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="TranslateModel.cs" />
+    <Page Include="HotKeySettingWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
