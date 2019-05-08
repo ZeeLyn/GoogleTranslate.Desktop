@@ -58,7 +58,7 @@
                 </ItemsControl.ItemTemplate>
 
             </ItemsControl>
-            <Controls:DropDownButton BorderThickness="0" Margin="0 5 10 5" Background="#1585B5" ItemsSource="{Binding Languages ,Mode=TwoWay}" DisplayMemberPath="Name" Content="{Binding TargetLanguageText}" Name="SwitchLanguageDropDown">
+            <Controls:DropDownButton BorderThickness="0" Margin="0 5 10 5" Background="#1585B5" ItemsSource="{Binding Languages ,Mode=TwoWay}" DisplayMemberPath="Name" Content="{Binding TargetLanguageText}" Name="SwitchLanguageDropDown" FontSize="14" FontWeight="Bold">
                 <Controls:DropDownButton.ItemContainerStyle>
                     <Style BasedOn="{StaticResource {x:Type MenuItem}}" TargetType="{x:Type MenuItem}">
                         <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:DropDownButton}}, Path=DataContext.GenreDropDownMenuItemCommand}" />
