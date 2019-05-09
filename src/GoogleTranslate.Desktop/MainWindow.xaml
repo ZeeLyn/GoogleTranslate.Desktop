@@ -9,7 +9,7 @@
         xmlns:desktop="clr-namespace:GoogleTranslate.Desktop"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="GoogleTranslate.Desktop.MainWindow"
         mc:Ignorable="d"
-        Title="Google translate desktop" Height="550" Width="1000" Loaded="MainWindow_Loaded" TitlebarHeight="40">
+        Title="Google translate desktop" Height="550" Width="1000" Loaded="MainWindow_Loaded" TitlebarHeight="40" Icon="/resources/logo.ico">
 
     <Controls:MetroWindow.Resources>
         <RoutedUICommand x:Key="OpenHelpClick" Text="OpenHelpClick"/>
@@ -43,22 +43,21 @@
 
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
-            <ItemsControl ItemsSource="{Binding RecentlyUsedLanguages}" HorizontalAlignment="Center"  Controls:ScrollViewerHelper.IsHorizontalScrollWheelEnabled="True">
-
+            <ItemsControl ItemsSource="{Binding RecentlyUsedLanguages}" HorizontalAlignment="Center"  Controls:ScrollViewerHelper.IsHorizontalScrollWheelEnabled="True" Margin="0 0 10 0">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal"></StackPanel>
-
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Label Margin="0 7 5 0" Cursor="Hand" Content="{Binding Name}"></Label>
+                        <Label Margin="0 7 5 0" Cursor="Hand" Content="{Binding Name}" Uid="{Binding Code}" ToolTip="最近使用过的语言"  MouseUp="SelectRecentlyUsedLanguage">
+                        </Label>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
 
             </ItemsControl>
-            <Controls:DropDownButton BorderThickness="0" Margin="0 5 10 5" Background="#1585B5" ItemsSource="{Binding Languages ,Mode=TwoWay}" DisplayMemberPath="Name" Content="{Binding TargetLanguageText}" Name="SwitchLanguageDropDown" FontSize="14" FontWeight="Bold">
+            <Controls:DropDownButton BorderThickness="0" Margin="10 5 10 5" Background="#1585B5" ItemsSource="{Binding Languages ,Mode=TwoWay}" DisplayMemberPath="Name" Content="{Binding TargetLanguageText}" Name="SwitchLanguageDropDown" FontSize="14" FontWeight="Bold" ToolTip="目标语言">
                 <Controls:DropDownButton.ItemContainerStyle>
                     <Style BasedOn="{StaticResource {x:Type MenuItem}}" TargetType="{x:Type MenuItem}">
                         <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:DropDownButton}}, Path=DataContext.GenreDropDownMenuItemCommand}" />
@@ -66,7 +65,9 @@
                     </Style>
                 </Controls:DropDownButton.ItemContainerStyle>
             </Controls:DropDownButton>
-
+            <Label>
+                <Image Name="TopMostIcon" Width="16" Height="16" Source="/resources/topmost_no.ico" Margin="0 7 0 0" Cursor="Hand" ToolTip="置顶"  MouseUp="TopMostIcon_MouseUp"></Image>
+            </Label>
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
 

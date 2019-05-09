@@ -48,12 +48,12 @@ namespace GoogleTranslate.Desktop
         public MainWindow()
         {
             DataContext = _translateModel;
-            Icon = BitmapFrame.Create(new Uri("pack://application:,,,/logo.ico", UriKind.RelativeOrAbsolute));
+            //Icon = BitmapFrame.Create(new Uri("pack://application:,,,/resources/logo.ico", UriKind.RelativeOrAbsolute));
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             _notifyIcon.Text = @"Google translate desktop";
             _notifyIcon.Visible = true;
-            _notifyIcon.Icon = new System.Drawing.Icon("logo.ico");
+            _notifyIcon.Icon = new System.Drawing.Icon(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "resources/logo.ico"));
             _notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
 
 
@@ -70,6 +70,40 @@ namespace GoogleTranslate.Desktop
             _notifyIcon.ContextMenu = new System.Windows.Forms.ContextMenu(menuItems);
 
             _translateModel.OnChangeTargetLanguage += arg => { Translate(); };
+            var appSettings = AppSettingsManager.Read();
+            if (appSettings.TopMost)
+            {
+                Topmost = true;
+                TopMostIcon.Source = BitmapFrame.Create(new Uri("pack://application:,,,/resources/topmost_yes.ico", UriKind.RelativeOrAbsolute));
+                TopMostIcon.ToolTip = "取消置顶";
+            }
+            else
+            {
+                Topmost = false;
+                TopMostIcon.Source = BitmapFrame.Create(new Uri("pack://application:,,,/resources/topmost_no.ico", UriKind.RelativeOrAbsolute));
+                TopMostIcon.ToolTip = "置顶";
+            }
+
+        }
+
+        private void TopMostIcon_MouseUp(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            var appSettings = AppSettingsManager.Read();
+            if (!appSettings.TopMost)
+            {
+                Topmost = true;
+                TopMostIcon.Source = BitmapFrame.Create(new Uri("pack://application:,,,/resources/topmost_yes.ico", UriKind.RelativeOrAbsolute));
+                TopMostIcon.ToolTip = "取消置顶";
+            }
+            else
+            {
+                Topmost = false;
+                TopMostIcon.Source = BitmapFrame.Create(new Uri("pack://application:,,,/resources/topmost_no.ico", UriKind.RelativeOrAbsolute));
+                TopMostIcon.ToolTip = "置顶";
+            }
+
+            appSettings.TopMost = !appSettings.TopMost;
+            AppSettingsManager.UpdateAppSettings();
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -275,6 +309,18 @@ namespace GoogleTranslate.Desktop
                     break;
             }
             return IntPtr.Zero;
+        }
+
+        private void SelectRecentlyUsedLanguage(object sender, MouseButtonEventArgs e)
+        {
+            var label = (System.Windows.Controls.Label)sender;
+            var code = label.Uid;
+            var lag = _translateModel.Languages.FirstOrDefault(p => p.Code == code);
+            if (lag == null)
+                return;
+            _translateModel.TargetLanguage = code;
+            _translateModel.TargetLanguageText = lag.Name;
+            Translate();
         }
     }
 }

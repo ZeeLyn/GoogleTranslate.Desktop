@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Windows;
 using System.Windows.Input;
 using GoogleTranslate.Desktop.Annotations;
-using MahApps.Metro.Controls;
 using Newtonsoft.Json;
 
 namespace GoogleTranslate.Desktop
@@ -30,7 +27,10 @@ namespace GoogleTranslate.Desktop
 
                 UpdateRecentlyUsedLanguages(selectedItem);
             });
-            ReadRecentlyUsedLanguages();
+            foreach (var item in AppSettingsManager.Read().RecentlyUsedLanguages)
+            {
+                RecentlyUsedLanguages.Add(item);
+            }
         }
 
         private string _inputText;
@@ -41,7 +41,7 @@ namespace GoogleTranslate.Desktop
             set
             {
                 _inputText = value;
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(InputText));
             }
         }
 
@@ -54,7 +54,7 @@ namespace GoogleTranslate.Desktop
             set
             {
                 _translateResult = value;
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(TranslateResult));
             }
         }
 
@@ -65,7 +65,7 @@ namespace GoogleTranslate.Desktop
             set
             {
                 _targetLanguage = value;
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(TargetLanguage));
             }
         }
 
@@ -76,7 +76,7 @@ namespace GoogleTranslate.Desktop
             set
             {
                 _targetLanguageText = value;
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(TargetLanguageText));
             }
         }
 
@@ -85,14 +85,15 @@ namespace GoogleTranslate.Desktop
 
         public List<Language> Languages { get; set; }
 
-        private List<Language> _recentlyUsedLanguages;
-        public List<Language> RecentlyUsedLanguages
+        private ObservableCollection<Language> _recentlyUsedLanguages = new ObservableCollection<Language>();
+
+        public ObservableCollection<Language> RecentlyUsedLanguages
         {
             get => _recentlyUsedLanguages;
             set
             {
                 _recentlyUsedLanguages = value;
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(RecentlyUsedLanguages));
             }
         }
 
@@ -108,44 +109,15 @@ namespace GoogleTranslate.Desktop
 
         private void UpdateRecentlyUsedLanguages(Language current)
         {
-
-            if (RecentlyUsedLanguages == null)
+            if (RecentlyUsedLanguages.Any(p => p.Code == current.Code))
+                return;
+            if (RecentlyUsedLanguages.Count >= 5)
             {
-                RecentlyUsedLanguages = new List<Language> { current };
+                RecentlyUsedLanguages.RemoveAt(0);
             }
-            else
-            {
-
-                if (RecentlyUsedLanguages.Any(p => p.Code == current.Code))
-                    return;
-                if (RecentlyUsedLanguages.Count >= 5)
-                {
-                    RecentlyUsedLanguages.RemoveAt(RecentlyUsedLanguages.Count - 1);
-                }
-
-                RecentlyUsedLanguages.Add(current);
-            }
-            var configUrl = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config");
-            File.WriteAllText(configUrl, JsonConvert.SerializeObject(RecentlyUsedLanguages));
-        }
-
-        private void ReadRecentlyUsedLanguages()
-        {
-            var configUrl = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config");
-            if (File.Exists(configUrl))
-            {
-                var json = File.ReadAllText(configUrl);
-                if (string.IsNullOrWhiteSpace(json))
-                    return;
-                try
-                {
-                    RecentlyUsedLanguages = JsonConvert.DeserializeObject<List<Language>>(json);
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
+            RecentlyUsedLanguages.Insert(0, current);
+            AppSettingsManager.Read().RecentlyUsedLanguages = RecentlyUsedLanguages.ToList();
+            AppSettingsManager.UpdateAppSettings();
         }
     }
 
