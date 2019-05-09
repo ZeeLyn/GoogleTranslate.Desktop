@@ -65,6 +65,8 @@ namespace GoogleTranslate.Desktop
             set
             {
                 _targetLanguage = value;
+                AppSettingsManager.Read().CurrentTargetLanguage = value;
+                AppSettingsManager.UpdateAppSettings();
                 OnPropertyChanged(nameof(TargetLanguage));
             }
         }

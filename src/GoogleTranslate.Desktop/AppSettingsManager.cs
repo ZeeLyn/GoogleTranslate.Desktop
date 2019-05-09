@@ -7,7 +7,6 @@ namespace GoogleTranslate.Desktop
 {
     public class AppSettingsManager
     {
-
         private static AppSettings AppSettings { get; set; }
 
         public static AppSettings Read()
@@ -40,6 +39,8 @@ namespace GoogleTranslate.Desktop
 
     public class AppSettings
     {
+        public string CurrentTargetLanguage { get; set; } = "en";
+
         public bool TopMost { get; set; }
 
         public List<Language> RecentlyUsedLanguages { get; set; } = new List<Language>();

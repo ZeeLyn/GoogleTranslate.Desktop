@@ -1,22 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
 using MahApps.Metro.Controls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -83,6 +75,12 @@ namespace GoogleTranslate.Desktop
                 TopMostIcon.ToolTip = "置顶";
             }
 
+            var lag = _translateModel.Languages.FirstOrDefault(p => p.Code == (string.IsNullOrWhiteSpace(appSettings.CurrentTargetLanguage) ? "en" : appSettings.CurrentTargetLanguage));
+            if (lag != null)
+            {
+                _translateModel.TargetLanguage = lag.Code;
+                _translateModel.TargetLanguageText = lag.Name;
+            }
         }
 
         private void TopMostIcon_MouseUp(object sender, System.Windows.Input.MouseEventArgs e)
