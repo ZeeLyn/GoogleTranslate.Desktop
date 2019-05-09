@@ -332,7 +332,6 @@ namespace GoogleTranslate.Desktop
             Translate();
         }
 
-
         private void CleanInputClick(object sender, CanExecuteRoutedEventArgs e)
         {
             InputTextBox.Text = "";
