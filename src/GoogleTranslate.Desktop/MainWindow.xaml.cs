@@ -47,8 +47,6 @@ namespace GoogleTranslate.Desktop
             _notifyIcon.Icon = new System.Drawing.Icon(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logo.ico"));
             _notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
 
-
-
             Closing += MainWindow_Closing;
 
             var menuItems = new[]
@@ -81,6 +79,8 @@ namespace GoogleTranslate.Desktop
                 _translateModel.TargetLanguage = lag.Code;
                 _translateModel.TargetLanguageText = lag.Name;
             }
+
+            InputTextBox.Focus();
         }
 
         private void TopMostIcon_MouseUp(object sender, System.Windows.Input.MouseEventArgs e)
@@ -116,7 +116,7 @@ namespace GoogleTranslate.Desktop
                 IsUsable = true,
                 IsSelectCtrl = true,
                 SelectKey = 49,
-                Name = EHotKeySetting.打开主窗口.ToString()
+                Name = EHotKeySetting.ShowMainWindow.ToString()
             }, m_Hwnd);
         }
 
@@ -295,7 +295,7 @@ namespace GoogleTranslate.Desktop
             {
                 case HotKeyManager.WM_HOTKEY:
                     int sid = wideParam.ToInt32();
-                    if (sid == HotKeyHelper.GetHotKeySetting(EHotKeySetting.打开主窗口))
+                    if (sid == HotKeyHelper.GetHotKeySetting(EHotKeySetting.ShowMainWindow))
                     {
                         if (ShowInTaskbar)
                             HideWindow();

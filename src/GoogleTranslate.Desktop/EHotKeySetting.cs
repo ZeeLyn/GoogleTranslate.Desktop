@@ -5,6 +5,6 @@
     /// </summary>
     public enum EHotKeySetting
     {
-        打开主窗口 = 0
+        ShowMainWindow = 0
     }
 }

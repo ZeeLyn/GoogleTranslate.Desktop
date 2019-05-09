@@ -80,8 +80,8 @@
             <ColumnDefinition Width="5"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <TextBox  Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" BorderThickness="0" Background="#252526" Foreground="#ffffff" Margin="10" TextChanged="Input_TextChanged" FontSize="14" TabIndex="0" MaxLength="5000"/>
-        <GridSplitter  Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" x:Name="InputTextBox" Background="#3F3F46"/>
+        <TextBox  Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" BorderThickness="0" Background="#252526" Foreground="#ffffff" Margin="10" TextChanged="Input_TextChanged" FontSize="14" TabIndex="0" MaxLength="5000" Name="InputTextBox"/>
+        <GridSplitter  Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch"  Background="#3F3F46"/>
         <TextBox  Grid.Row="0" Grid.Column="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" BorderThickness="0" Background="#252526" Foreground="#ffffff" Margin="10" FontSize="14" TabIndex="1" Text="{Binding TranslateResult, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
     </Grid>
