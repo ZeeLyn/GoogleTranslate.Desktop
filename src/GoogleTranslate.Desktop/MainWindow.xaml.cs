@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -53,7 +54,7 @@ namespace GoogleTranslate.Desktop
             {
                 //new MenuItem("热键",SetHotKey),
                 new MenuItem("开机启动",SetAutoStartup) { Name="AutoStartup", Checked=AutoStartup.IsExistKey("Google translate desktop") , },
-                new MenuItem("开打主窗口", Show),
+                new MenuItem("开打主窗口( Control+` )", Show),
                 new MenuItem("退出", Exit)
             };
             _notifyIcon.ContextMenu = new System.Windows.Forms.ContextMenu(menuItems);
@@ -81,6 +82,7 @@ namespace GoogleTranslate.Desktop
             }
 
             InputTextBox.Focus();
+            HideWindow();
         }
 
         private void TopMostIcon_MouseUp(object sender, System.Windows.Input.MouseEventArgs e)
@@ -115,7 +117,7 @@ namespace GoogleTranslate.Desktop
             {
                 IsUsable = true,
                 IsSelectCtrl = true,
-                SelectKey = 49,
+                SelectKey = 192,
                 Name = EHotKeySetting.ShowMainWindow.ToString()
             }, m_Hwnd);
         }
@@ -129,7 +131,7 @@ namespace GoogleTranslate.Desktop
                 menu.Checked = !menu.Checked;
             }
             else
-                MessageBox.Show("设置失败，请以管理员身份运行！", "失败");
+                this.ShowMessageAsync("错误", "设置失败，请以管理员身份运行！");
 
         }
 
@@ -190,7 +192,17 @@ namespace GoogleTranslate.Desktop
 
         private void OpenHelpClick(object sender, CanExecuteRoutedEventArgs e)
         {
-            MessageBox.Show(this, "Control+1:主窗口显隐切换", "快捷键");
+            OpenHelp();
+        }
+
+        private void HelpIcon_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            OpenHelp();
+        }
+
+        private void OpenHelp()
+        {
+            this.ShowMessageAsync("帮助", "Alt+H : 打开帮助\n\nControl+` : 主窗口显隐切换\n\nAlt+C : 清空输入的文字");
         }
 
 
@@ -318,6 +330,17 @@ namespace GoogleTranslate.Desktop
             _translateModel.TargetLanguage = code;
             _translateModel.TargetLanguageText = lag.Name;
             Translate();
+        }
+
+
+        private void CleanInputClick(object sender, CanExecuteRoutedEventArgs e)
+        {
+            InputTextBox.Text = "";
+        }
+
+        private void GithubIcon_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/1100100/GoogleTranslate.Desktop");
         }
     }
 }

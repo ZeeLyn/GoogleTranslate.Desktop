@@ -14,18 +14,17 @@
     <Controls:MetroWindow.Resources>
         <RoutedUICommand x:Key="OpenHelpClick" Text="OpenHelpClick"/>
         <RoutedUICommand x:Key="SwitchLanguageClick" Text="SwitchLanguageClick"/>
+        <RoutedUICommand x:Key="CleanInputClick" Text="CleanInputClick"/>
     </Controls:MetroWindow.Resources>
 
     <Controls:MetroWindow.IconTemplate>
         <DataTemplate>
             <Grid 
-                  Margin="6"
+                  Margin="8"
                   Background="Transparent"
                   RenderOptions.EdgeMode="Aliased"
                   RenderOptions.BitmapScalingMode="HighQuality">
-
                 <Image Source="/logo.ico" />
-
             </Grid>
         </DataTemplate>
     </Controls:MetroWindow.IconTemplate>
@@ -33,11 +32,13 @@
     <Controls:MetroWindow.InputBindings>
         <KeyBinding Gesture="Alt+H" Key="H"  Command="{StaticResource OpenHelpClick}"/>
         <KeyBinding Gesture="Alt+S" Key="S"  Command="{StaticResource SwitchLanguageClick}"/>
+        <KeyBinding Gesture="Alt+C" Key="C"  Command="{StaticResource CleanInputClick}"/>
     </Controls:MetroWindow.InputBindings>
 
     <Controls:MetroWindow.CommandBindings>
         <CommandBinding Command="{StaticResource OpenHelpClick}" CanExecute="OpenHelpClick"/>
         <CommandBinding Command="{StaticResource SwitchLanguageClick}" CanExecute="SwitchLanguageClick"/>
+        <CommandBinding Command="{StaticResource CleanInputClick}" CanExecute="CleanInputClick"/>
     </Controls:MetroWindow.CommandBindings>
 
 
@@ -68,6 +69,12 @@
             <Label>
                 <Image Name="TopMostIcon" Width="16" Height="16" Source="/resources/topmost_no.ico" Margin="0 7 0 0" Cursor="Hand" ToolTip="置顶"  MouseUp="TopMostIcon_MouseUp"></Image>
             </Label>
+            <Label>
+                <Image Name="GithubIcon" Width="14" Height="14" Source="/resources/github.ico" Margin="0 8 0 0" Cursor="Hand" ToolTip="源码" MouseUp="GithubIcon_MouseUp"></Image>
+            </Label>
+            <Label>
+                <Image Name="HelpIcon" Width="14" Height="14" Source="/resources/help.ico" Margin="0 8 0 0" Cursor="Hand" ToolTip="帮助"  MouseUp="HelpIcon_MouseUp"></Image>
+            </Label>
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
 
@@ -82,7 +89,7 @@
         </Grid.ColumnDefinitions>
         <TextBox  Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" BorderThickness="0" Background="#252526" Foreground="#ffffff" Margin="10" TextChanged="Input_TextChanged" FontSize="14" TabIndex="0" MaxLength="5000" Name="InputTextBox"/>
         <GridSplitter  Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch"  Background="#3F3F46"/>
-        <TextBox  Grid.Row="0" Grid.Column="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" BorderThickness="0" Background="#252526" Foreground="#ffffff" Margin="10" FontSize="14" TabIndex="1" Text="{Binding TranslateResult, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox  Grid.Row="0" Grid.Column="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" BorderThickness="0" Background="#252526" Foreground="#ffffff" Margin="10" FontSize="14" TabIndex="1" Text="{Binding TranslateResult, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
 
     </Grid>
 
