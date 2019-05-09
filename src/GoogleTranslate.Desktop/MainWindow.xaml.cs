@@ -48,12 +48,11 @@ namespace GoogleTranslate.Desktop
         public MainWindow()
         {
             DataContext = _translateModel;
-            //Icon = BitmapFrame.Create(new Uri("pack://application:,,,/resources/logo.ico", UriKind.RelativeOrAbsolute));
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             _notifyIcon.Text = @"Google translate desktop";
             _notifyIcon.Visible = true;
-            _notifyIcon.Icon = new System.Drawing.Icon(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "resources/logo.ico"));
+            _notifyIcon.Icon = new System.Drawing.Icon(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logo.ico"));
             _notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
 
 

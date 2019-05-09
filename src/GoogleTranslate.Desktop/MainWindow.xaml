@@ -9,7 +9,7 @@
         xmlns:desktop="clr-namespace:GoogleTranslate.Desktop"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="GoogleTranslate.Desktop.MainWindow"
         mc:Ignorable="d"
-        Title="Google translate desktop" Height="550" Width="1000" Loaded="MainWindow_Loaded" TitlebarHeight="40" Icon="/resources/logo.ico">
+        Title="Google translate desktop" Height="550" Width="1000" Loaded="MainWindow_Loaded" TitlebarHeight="40" Icon="logo.ico">
 
     <Controls:MetroWindow.Resources>
         <RoutedUICommand x:Key="OpenHelpClick" Text="OpenHelpClick"/>
