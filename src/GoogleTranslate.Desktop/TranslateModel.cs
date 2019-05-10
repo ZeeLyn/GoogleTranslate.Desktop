@@ -87,6 +87,19 @@ namespace GoogleTranslate.Desktop
 
         public List<Language> Languages { get; set; }
 
+
+        private List<MoreInformation> _moreInformation = new List<MoreInformation>();
+
+        public List<MoreInformation> MoreInformation
+        {
+            get => _moreInformation;
+            set
+            {
+                _moreInformation = value;
+                OnPropertyChanged(nameof(MoreInformation));
+            }
+        }
+
         private ObservableCollection<Language> _recentlyUsedLanguages = new ObservableCollection<Language>();
 
         public ObservableCollection<Language> RecentlyUsedLanguages
@@ -96,6 +109,18 @@ namespace GoogleTranslate.Desktop
             {
                 _recentlyUsedLanguages = value;
                 OnPropertyChanged(nameof(RecentlyUsedLanguages));
+            }
+        }
+
+        private int _showMore;
+
+        public int ShowMore
+        {
+            get => _showMore;
+            set
+            {
+                _showMore = value;
+                OnPropertyChanged(nameof(ShowMore));
             }
         }
 
@@ -145,5 +170,20 @@ namespace GoogleTranslate.Desktop
         public string Code { get; set; }
 
         public string Name { get; set; }
+    }
+
+
+    public class MoreInformation
+    {
+        public string WordAttribute { get; set; }
+
+        public List<WordToTranslate> WordToTranslates { get; set; }
+    }
+
+    public class WordToTranslate
+    {
+        public string Word { get; set; }
+
+        public List<string> Translates { get; set; }
     }
 }

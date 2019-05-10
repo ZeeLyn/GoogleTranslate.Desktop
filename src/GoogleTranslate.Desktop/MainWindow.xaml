@@ -4,17 +4,15 @@
                       xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
-        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-        xmlns:desktop="clr-namespace:GoogleTranslate.Desktop"
-        xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="GoogleTranslate.Desktop.MainWindow"
+        x:Class="GoogleTranslate.Desktop.MainWindow"
         mc:Ignorable="d"
-        Title="Google translate desktop" Height="550" Width="1000" Loaded="MainWindow_Loaded" TitlebarHeight="40" Icon="logo.ico">
+        Title="Google translate desktop" Height="550" Width="1000" Loaded="MainWindow_Loaded" TitlebarHeight="40" Icon="logo.ico" WindowStartupLocation="CenterScreen">
 
     <Controls:MetroWindow.Resources>
         <RoutedUICommand x:Key="OpenHelpClick" Text="OpenHelpClick"/>
         <RoutedUICommand x:Key="SwitchLanguageClick" Text="SwitchLanguageClick"/>
         <RoutedUICommand x:Key="CleanInputClick" Text="CleanInputClick"/>
+        <RoutedUICommand x:Key="ShowMoreClick" Text="ShowMoreClick"/>
     </Controls:MetroWindow.Resources>
 
     <Controls:MetroWindow.IconTemplate>
@@ -33,12 +31,14 @@
         <KeyBinding Gesture="Alt+H" Key="H"  Command="{StaticResource OpenHelpClick}"/>
         <KeyBinding Gesture="Alt+S" Key="S"  Command="{StaticResource SwitchLanguageClick}"/>
         <KeyBinding Gesture="Alt+C" Key="C"  Command="{StaticResource CleanInputClick}"/>
+        <KeyBinding Gesture="Alt+M" Key="M"  Command="{StaticResource ShowMoreClick}"/>
     </Controls:MetroWindow.InputBindings>
 
     <Controls:MetroWindow.CommandBindings>
         <CommandBinding Command="{StaticResource OpenHelpClick}" CanExecute="OpenHelpClick"/>
         <CommandBinding Command="{StaticResource SwitchLanguageClick}" CanExecute="SwitchLanguageClick"/>
         <CommandBinding Command="{StaticResource CleanInputClick}" CanExecute="CleanInputClick"/>
+        <CommandBinding Command="{StaticResource ShowMoreClick}" CanExecute="ShowMoreClick"/>
     </Controls:MetroWindow.CommandBindings>
 
 
@@ -52,13 +52,13 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Label Margin="0 7 5 0" Cursor="Hand" Content="{Binding Name}" Uid="{Binding Code}" ToolTip="最近使用过的语言"  MouseUp="SelectRecentlyUsedLanguage">
+                        <Label Margin="0 7 5 0" Cursor="Hand" Content="{Binding Name}" Uid="{Binding Code}" ToolTip="最近使用过的语言"  MouseUp="SelectRecentlyUsedLanguage" Foreground="#6E6E6E">
                         </Label>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
 
             </ItemsControl>
-            <Controls:DropDownButton BorderThickness="0" Margin="10 5 10 5" Background="#1585B5" ItemsSource="{Binding Languages ,Mode=TwoWay}" DisplayMemberPath="Name" Content="{Binding TargetLanguageText}" Name="SwitchLanguageDropDown" FontSize="14" FontWeight="Bold" ToolTip="目标语言">
+            <Controls:DropDownButton BorderThickness="0" Margin="10 5 10 5"  Foreground="#FFFFFF" ItemsSource="{Binding Languages ,Mode=TwoWay}" DisplayMemberPath="Name" Content="{Binding TargetLanguageText}" Name="SwitchLanguageDropDown" FontSize="14" FontWeight="Bold" ToolTip="目标语言">
                 <Controls:DropDownButton.ItemContainerStyle>
                     <Style BasedOn="{StaticResource {x:Type MenuItem}}" TargetType="{x:Type MenuItem}">
                         <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:DropDownButton}}, Path=DataContext.GenreDropDownMenuItemCommand}" />
@@ -77,20 +77,94 @@
             </Label>
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
+    <Controls:MetroWindow.Flyouts>
+        <Controls:FlyoutsControl>
+            <Controls:Flyout Header="{Binding InputText }" Width="Auto" Position="Right" IsModal="True">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Height="Auto" Width="Auto" >
+                    <ItemsControl ItemsSource="{Binding MoreInformation}" Controls:ScrollViewerHelper.IsHorizontalScrollWheelEnabled="True">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="10 10 10 0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Row="0" Grid.Column="0"  Content="{Binding WordAttribute}" FontSize="16" Foreground="#007ACC" ></Label>
+                                    <ItemsControl  Grid.Row="1" Grid.Column="0" ItemsSource="{Binding WordToTranslates}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.Style>
+                                                        <Style TargetType="{x:Type Grid}">
+                                                            <Style.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="Background" Value="#252526"></Setter>
+                                                                </Trigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Grid.Style>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="100"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Label Content="{Binding Word}" Margin="0 5 0 5" Grid.Row="0" Grid.Column="0" FontSize="14"></Label>
+                                                    <ItemsControl Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Translates}">
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <StackPanel Orientation="Horizontal"></StackPanel>
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <Label Margin="0 5 5 5" Cursor="Hand" Content="{Binding Path=.}" Uid="{Binding Code}"  MouseUp="SelectMoreItem_MouseUp" Foreground="#757584" FontSize="14">
+                                                                    <Label.Style>
+                                                                        <Style TargetType="{x:Type Label}">
+                                                                            <Style.Triggers>
+                                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                                    <Setter Property="Background" Value="#FFFFFF"></Setter>
+                                                                                </Trigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </Label.Style>
+                                                                </Label>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </Grid>
 
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Controls:Flyout>
+        </Controls:FlyoutsControl>
+    </Controls:MetroWindow.Flyouts>
     <Grid Background="#252526">
         <Grid.RowDefinitions>
+            <RowDefinition Height="0.5"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="4"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="{Binding ShowMore}"/>
         </Grid.ColumnDefinitions>
-        <TextBox  Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" BorderThickness="0" Background="#252526" Foreground="#ffffff" Margin="10" TextChanged="Input_TextChanged" FontSize="14" TabIndex="0" MaxLength="5000" Name="InputTextBox"/>
-        <GridSplitter  Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch"  Background="#3F3F46"/>
-        <TextBox  Grid.Row="0" Grid.Column="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" BorderThickness="0" Background="#252526" Foreground="#ffffff" Margin="10" FontSize="14" TabIndex="1" Text="{Binding TranslateResult, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
-
+        <Border BorderThickness="0 0.5 0 0" BorderBrush="#2E2E34" Width="Auto"  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" />
+        <TextBox  Grid.Row="1" Grid.Column="0" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" BorderThickness="0" Background="#252526" Foreground="#ffffff" Margin="10" TextChanged="Input_TextChanged" FontSize="14" TabIndex="0" MaxLength="5000" Name="InputTextBox" />
+        <GridSplitter  Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch"  Background="#2E2E34"/>
+        <TextBox  Grid.Row="1" Grid.Column="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" BorderThickness="0" Background="#252526" Foreground="#ffffff" Margin="10" FontSize="14" TabIndex="1" Text="{Binding TranslateResult, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+        <Image  Grid.Row="1" Grid.Column="3" Height="22" Width="22" Source="/resources/more.ico" MouseUp="ShowMore_Click" Cursor="Hand" ToolTip="查看更多( Alt+M )"></Image>
     </Grid>
 
 </Controls:MetroWindow>

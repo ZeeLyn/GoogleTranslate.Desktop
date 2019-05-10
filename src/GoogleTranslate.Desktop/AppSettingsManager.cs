@@ -9,6 +9,12 @@ namespace GoogleTranslate.Desktop
     {
         private static AppSettings AppSettings { get; set; }
 
+        public static bool ExistConfig()
+        {
+            var configUrl = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config");
+            return File.Exists(configUrl);
+        }
+
         public static AppSettings Read()
         {
             if (AppSettings != null) return AppSettings;

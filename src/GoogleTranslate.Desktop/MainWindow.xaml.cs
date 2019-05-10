@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 using Application = System.Windows.Application;
+using Label = System.Windows.Controls.Label;
 using MenuItem = System.Windows.Forms.MenuItem;
 using MessageBox = System.Windows.MessageBox;
 using TextBox = System.Windows.Controls.TextBox;
@@ -42,11 +44,16 @@ namespace GoogleTranslate.Desktop
         {
             DataContext = _translateModel;
             InitializeComponent();
-            WindowStartupLocation = WindowStartupLocation.CenterScreen;
             _notifyIcon.Text = @"Google translate desktop";
             _notifyIcon.Visible = true;
             _notifyIcon.Icon = new System.Drawing.Icon(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logo.ico"));
             _notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
+            if (!AppSettingsManager.ExistConfig())
+            {
+                _notifyIcon.BalloonTipTitle = @"Hi, 我在这儿呢";
+                _notifyIcon.BalloonTipText = @"使用快捷键 Control+` 可以打开我哦";
+                _notifyIcon.ShowBalloonTip(5000);
+            }
 
             Closing += MainWindow_Closing;
 
@@ -202,7 +209,7 @@ namespace GoogleTranslate.Desktop
 
         private void OpenHelp()
         {
-            this.ShowMessageAsync("帮助", "Alt+H : 打开帮助\n\nControl+` : 主窗口显隐切换\n\nAlt+C : 清空输入的文字");
+            this.ShowMessageAsync("帮助", "Alt+H : 打开帮助\n\nControl+` : 主窗口显隐切换\n\nAlt+C : 清空输入的文字\n\nAlt+M : 查看更多翻译结果");
         }
 
 
@@ -232,17 +239,62 @@ namespace GoogleTranslate.Desktop
                         var res = new StringBuilder();
                         if (json?[0] != null)
                         {
-                            foreach (var item in json?[0])
+                            foreach (var item in json[0])
                             {
                                 res.Append(item[0].Value<string>());
                             }
                             _translateModel.TranslateResult = res.ToString();
                         }
+
+                        try
+                        {
+                            if (json?[1] != null && json[1].Any())
+                            {
+                                var result = new List<MoreInformation>();
+                                foreach (var items in json[1])
+                                {
+                                    var info = new MoreInformation
+                                    {
+                                        WordAttribute = items[0].Value<string>(),
+                                        WordToTranslates = new List<WordToTranslate>()
+                                    };
+                                    foreach (var words in items[2])
+                                    {
+                                        var word = new WordToTranslate
+                                        {
+                                            Word = words[0].Value<string>(),
+                                            Translates = new List<string>()
+                                        };
+                                        foreach (var translates in words[1])
+                                        {
+                                            word.Translates.Add(translates.Value<string>());
+                                        }
+
+                                        info.WordToTranslates.Add(word);
+                                    }
+
+                                    result.Add(info);
+                                }
+
+                                _translateModel.MoreInformation = result;
+                            }
+                            else
+                                _translateModel.MoreInformation = null;
+
+                            _translateModel.ShowMore =
+                                _translateModel.MoreInformation != null && _translateModel.MoreInformation.Any()
+                                    ? 22
+                                    : 0;
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
                     }
                 }
-                catch (Exception e)
+                catch
                 {
-                    MessageBox.Show(e.Message);
+                    // ignored
                 }
             });
         }
@@ -340,6 +392,36 @@ namespace GoogleTranslate.Desktop
         private void GithubIcon_MouseUp(object sender, MouseButtonEventArgs e)
         {
             System.Diagnostics.Process.Start("https://github.com/1100100/GoogleTranslate.Desktop");
+        }
+
+
+
+        private void ShowMore_Click(object sender, MouseButtonEventArgs e)
+        {
+            OpenOrCloseFlyout();
+        }
+
+        private void SelectMoreItem_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            var label = (Label)sender;
+            InputTextBox.Text = label.Content.ToString();
+            OpenOrCloseFlyout();
+        }
+
+        private void OpenOrCloseFlyout()
+        {
+            var flyout = this.Flyouts.Items[0] as Flyout;
+            if (flyout == null)
+            {
+                return;
+            }
+            flyout.IsOpen = !flyout.IsOpen;
+        }
+
+        private void ShowMoreClick(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (_translateModel.MoreInformation != null && _translateModel.MoreInformation.Any())
+                OpenOrCloseFlyout();
         }
     }
 }
