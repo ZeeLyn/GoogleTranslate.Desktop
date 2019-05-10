@@ -223,6 +223,8 @@ namespace GoogleTranslate.Desktop
             if (string.IsNullOrWhiteSpace(_translateModel.InputText))
             {
                 _translateModel.TranslateResult = "";
+                _translateModel.MoreInformation = null;
+                _translateModel.ShowMore = 0;
                 return;
             }
 
