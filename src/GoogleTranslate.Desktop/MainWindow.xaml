@@ -79,7 +79,7 @@
     </Controls:MetroWindow.RightWindowCommands>
     <Controls:MetroWindow.Flyouts>
         <Controls:FlyoutsControl>
-            <Controls:Flyout Header="{Binding InputText }" Width="Auto" Position="Right" IsModal="True">
+            <Controls:Flyout Header="{Binding InputText }" Width="Auto" Position="Right" IsModal="True" IsPinned="False">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Height="Auto" Width="Auto" >
                     <ItemsControl ItemsSource="{Binding MoreInformation}" Controls:ScrollViewerHelper.IsHorizontalScrollWheelEnabled="True">
                         <ItemsControl.ItemTemplate>

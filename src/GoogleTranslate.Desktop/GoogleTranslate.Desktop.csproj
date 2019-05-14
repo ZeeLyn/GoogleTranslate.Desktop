@@ -117,6 +117,7 @@
     <Compile Include="HotKeySettingWindow.xaml.cs">
       <DependentUpon>HotKeySettingWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="InputQueue.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="TranslateModel.cs" />
     <Page Include="CustomThemes.xaml">

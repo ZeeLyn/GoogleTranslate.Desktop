@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -12,13 +8,9 @@ using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RestSharp;
 using Application = System.Windows.Application;
 using Label = System.Windows.Controls.Label;
 using MenuItem = System.Windows.Forms.MenuItem;
-using MessageBox = System.Windows.MessageBox;
 using TextBox = System.Windows.Controls.TextBox;
 
 
@@ -29,8 +21,6 @@ namespace GoogleTranslate.Desktop
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        private readonly RestClient _client = new RestClient("https://translate.google.cn");
-
         private readonly TranslateModel _translateModel = new TranslateModel();
 
         private readonly NotifyIcon _notifyIcon = new NotifyIcon();
@@ -66,7 +56,7 @@ namespace GoogleTranslate.Desktop
             };
             _notifyIcon.ContextMenu = new System.Windows.Forms.ContextMenu(menuItems);
 
-            _translateModel.OnChangeTargetLanguage += arg => { Translate(); };
+            _translateModel.OnChangeTargetLanguage += async arg => { await _translateModel.Translate(); };
             var appSettings = AppSettingsManager.Read();
             if (appSettings.TopMost)
             {
@@ -87,6 +77,8 @@ namespace GoogleTranslate.Desktop
                 _translateModel.TargetLanguage = lag.Code;
                 _translateModel.TargetLanguageText = lag.Name;
             }
+
+
 
             InputTextBox.Focus();
             HideWindow();
@@ -154,6 +146,7 @@ namespace GoogleTranslate.Desktop
         private void Exit(object sender, EventArgs e)
         {
             _notifyIcon.Visible = false;
+            _translateModel.Dispose();
             Application.Current.Shutdown();
         }
 
@@ -183,18 +176,13 @@ namespace GoogleTranslate.Desktop
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            //Keyboard.Focus(InputTextBox);
-            //var textBox = (TextBox)sender;
-            var r = InputTextBox.Focus();
-            //MessageBox.Show(r.ToString());
-
+            InputTextBox.Focus();
         }
 
         private void Input_TextChanged(object sender, TextChangedEventArgs e)
         {
             var input = (TextBox)sender;
             _translateModel.InputText = input.Text;
-            Translate();
         }
 
         private void OpenHelpClick(object sender, CanExecuteRoutedEventArgs e)
@@ -218,132 +206,9 @@ namespace GoogleTranslate.Desktop
             //SwitchLanguageDropDown.RaiseEvent(new RoutedEventArgs(DropDownButton.MouseEnterEvent));
         }
 
-        private void Translate()
-        {
-            if (string.IsNullOrWhiteSpace(_translateModel.InputText))
-            {
-                _translateModel.TranslateResult = "";
-                _translateModel.MoreInformation = null;
-                _translateModel.ShowMore = 0;
-                return;
-            }
-
-            Task.Run(async () =>
-            {
-                try
-                {
-                    var tick = tk(_translateModel.InputText, "432558.706957580");
-                    var request = new RestRequest($"translate_a/single?client=webapp&ie=UTF-8&sl=auto&tl={_translateModel.TargetLanguage}&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=gt&pc=1&otf=1&ssel=0&tsel=0&kc=1&tk={tick}&q={HttpUtility.UrlEncode(_translateModel.InputText)}");
-                    var response = await _client.ExecuteGetTaskAsync(request);
-                    if (response.IsSuccessful)
-                    {
-                        var json = JsonConvert.DeserializeObject<JArray>(response.Content);
-                        var res = new StringBuilder();
-                        if (json?[0] != null)
-                        {
-                            foreach (var item in json[0])
-                            {
-                                res.Append(item[0].Value<string>());
-                            }
-                            _translateModel.TranslateResult = res.ToString();
-                        }
-
-                        try
-                        {
-                            if (json?[1] != null && json[1].Any())
-                            {
-                                var result = new List<MoreInformation>();
-                                foreach (var items in json[1])
-                                {
-                                    var info = new MoreInformation
-                                    {
-                                        WordAttribute = items[0].Value<string>(),
-                                        WordToTranslates = new List<WordToTranslate>()
-                                    };
-                                    foreach (var words in items[2])
-                                    {
-                                        var word = new WordToTranslate
-                                        {
-                                            Word = words[0].Value<string>(),
-                                            Translates = new List<string>()
-                                        };
-                                        foreach (var translates in words[1])
-                                        {
-                                            word.Translates.Add(translates.Value<string>());
-                                        }
-
-                                        info.WordToTranslates.Add(word);
-                                    }
-
-                                    result.Add(info);
-                                }
-
-                                _translateModel.MoreInformation = result;
-                            }
-                            else
-                                _translateModel.MoreInformation = null;
-
-                            _translateModel.ShowMore =
-                                _translateModel.MoreInformation != null && _translateModel.MoreInformation.Any()
-                                    ? 22
-                                    : 0;
-                        }
-                        catch
-                        {
-                            // ignored
-                        }
-                    }
-                }
-                catch
-                {
-                    // ignored
-                }
-            });
-        }
 
 
 
-        #region
-        private string b(long a, string b)
-        {
-            for (int d = 0; d < b.Length - 2; d += 3)
-            {
-                char c = b.charAt(d + 2);
-                int c0 = 'a' <= c ? c.charCodeAt(0) - 87 : ExtensionMethods.Number(c);
-                long c1 = '+' == b.charAt(d + 1) ? a >> c0 : a << c0;
-                a = '+' == b.charAt(d) ? a + c1 & 4294967295 : a ^ c1;
-            }
-            a = ExtensionMethods.Number(a);
-            return a.ToString();
-        }
-
-        private string tk(string a, string TKK)
-        {
-            string[] e = TKK.Split('.');
-            int d = 0;
-            int h = 0;
-            h = ExtensionMethods.Number(e[0]);
-            byte[] g0 = Encoding.UTF8.GetBytes(a);
-            long aa = h;
-            for (d = 0; d < g0.Length; d++)
-            {
-                aa += g0[d];
-                aa = Convert.ToInt64(b(aa, "+-a^+6"));
-            }
-            aa = Convert.ToInt64(b(aa, "+-3^+b+-f"));
-            long bb = aa ^ ExtensionMethods.Number(e[1]);
-            aa = bb;
-            aa = aa + bb;
-            bb = aa - bb;
-            aa = aa - bb;
-            if (0 > aa)
-            {
-                aa = (aa & 2147483647) + 2147483648;
-            }
-            aa %= (long)1e6;
-            return aa + "." + (aa ^ h);
-        }
-        #endregion
 
 
         /// <summary>
@@ -374,7 +239,7 @@ namespace GoogleTranslate.Desktop
             return IntPtr.Zero;
         }
 
-        private void SelectRecentlyUsedLanguage(object sender, MouseButtonEventArgs e)
+        private async void SelectRecentlyUsedLanguage(object sender, MouseButtonEventArgs e)
         {
             var label = (System.Windows.Controls.Label)sender;
             var code = label.Uid;
@@ -383,7 +248,7 @@ namespace GoogleTranslate.Desktop
                 return;
             _translateModel.TargetLanguage = code;
             _translateModel.TargetLanguageText = lag.Name;
-            Translate();
+            await _translateModel.Translate();
         }
 
         private void CleanInputClick(object sender, CanExecuteRoutedEventArgs e)
