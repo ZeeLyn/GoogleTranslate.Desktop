@@ -179,7 +179,7 @@ namespace GoogleTranslate.Desktop
             }
             try
             {
-                var tick = tk(LastInputText, "432558.706957580");
+                var tick = Ticket(LastInputText, "432558.706957580");
                 var request = new RestRequest($"translate_a/single?client=webapp&ie=UTF-8&sl=auto&tl={TargetLanguage}&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=gt&pc=1&otf=1&ssel=0&tsel=0&kc=1&tk={tick}&q={HttpUtility.UrlEncode(LastInputText)}");
                 var response = await _client.ExecuteGetTaskAsync(request);
                 if (response.IsSuccessful)
@@ -261,7 +261,7 @@ namespace GoogleTranslate.Desktop
             return a.ToString();
         }
 
-        private string tk(string a, string TKK)
+        private string Ticket(string a, string TKK)
         {
             string[] e = TKK.Split('.');
             int d = 0;
