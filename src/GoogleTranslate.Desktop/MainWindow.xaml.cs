@@ -164,14 +164,17 @@ namespace GoogleTranslate.Desktop
 
         private void HideWindow()
         {
-            WindowState = WindowState.Minimized;
+            Visibility = Visibility.Hidden;
             ShowInTaskbar = false;
         }
 
         private void ShowWindow()
         {
-            WindowState = WindowState.Normal;
+            //WindowState = WindowState.Normal;
+            Visibility = Visibility.Visible;
             ShowInTaskbar = true;
+            InputTextBox.Focus();
+            InputTextBox.SelectAll();
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -289,6 +292,11 @@ namespace GoogleTranslate.Desktop
         {
             if (_translateModel.MoreInformation != null && _translateModel.MoreInformation.Any())
                 OpenOrCloseFlyout();
+        }
+
+        private void CopyClick(object sender, CanExecuteRoutedEventArgs e)
+        {
+            System.Windows.Clipboard.SetText(_translateModel.TranslateResult);
         }
     }
 }

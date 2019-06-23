@@ -13,6 +13,7 @@
         <RoutedUICommand x:Key="SwitchLanguageClick" Text="SwitchLanguageClick"/>
         <RoutedUICommand x:Key="CleanInputClick" Text="CleanInputClick"/>
         <RoutedUICommand x:Key="ShowMoreClick" Text="ShowMoreClick"/>
+        <RoutedUICommand x:Key="CopyClick" Text="CopyClick"/>
     </Controls:MetroWindow.Resources>
 
     <Controls:MetroWindow.IconTemplate>
@@ -30,8 +31,9 @@
     <Controls:MetroWindow.InputBindings>
         <KeyBinding Gesture="Alt+H" Key="H"  Command="{StaticResource OpenHelpClick}"/>
         <KeyBinding Gesture="Alt+S" Key="S"  Command="{StaticResource SwitchLanguageClick}"/>
-        <KeyBinding Gesture="Alt+C" Key="C"  Command="{StaticResource CleanInputClick}"/>
+        <KeyBinding Gesture="Alt+D" Key="D"  Command="{StaticResource CleanInputClick}"/>
         <KeyBinding Gesture="Alt+M" Key="M"  Command="{StaticResource ShowMoreClick}"/>
+        <KeyBinding Gesture="Alt+C" Key="C"  Command="{StaticResource CopyClick}"/>
     </Controls:MetroWindow.InputBindings>
 
     <Controls:MetroWindow.CommandBindings>
@@ -39,6 +41,7 @@
         <CommandBinding Command="{StaticResource SwitchLanguageClick}" CanExecute="SwitchLanguageClick"/>
         <CommandBinding Command="{StaticResource CleanInputClick}" CanExecute="CleanInputClick"/>
         <CommandBinding Command="{StaticResource ShowMoreClick}" CanExecute="ShowMoreClick"/>
+        <CommandBinding Command="{StaticResource CopyClick}" CanExecute="CopyClick"/>
     </Controls:MetroWindow.CommandBindings>
 
 
