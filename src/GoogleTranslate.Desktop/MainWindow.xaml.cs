@@ -200,7 +200,7 @@ namespace GoogleTranslate.Desktop
 
         private void OpenHelp()
         {
-            this.ShowMessageAsync("帮助", "Alt+H : 打开帮助\n\nControl+` : 主窗口显隐切换\n\nAlt+C : 清空输入的文字\n\nAlt+M : 查看更多翻译结果");
+            this.ShowMessageAsync("帮助", "Alt+H : 打开帮助\n\nControl+` : 主窗口显隐切换\n\nAlt+C : 复制翻译结果\n\nAlt+M : 查看更多翻译结果");
         }
 
 
@@ -225,6 +225,7 @@ namespace GoogleTranslate.Desktop
         /// <returns>返回句柄</returns>
         private IntPtr WndProc(IntPtr hWnd, int msg, IntPtr wideParam, IntPtr longParam, ref bool handled)
         {
+
             switch (msg)
             {
                 case HotKeyManager.WM_HOTKEY:
